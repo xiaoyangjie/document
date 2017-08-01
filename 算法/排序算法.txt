@@ -1,0 +1,218 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Sort
+{
+public:
+    Sort(){}
+    void directSort(vector<int> array)
+    {
+        long long length = array.size();
+        for (int i = 1 ; i < length ; i++)
+        {
+            bool flag = false;
+            int temp;
+            for (int j = 0 ; j < i ; j++)
+            {
+                if (array[i] < array[j])
+                {
+                    flag = true;
+                }
+                if (flag)
+                {
+                    temp = array[j];
+                    array[j] = array[i];
+                    array[i] = temp;
+                }
+            }
+        }
+        output(array);
+    }
+
+    void bubbleSort(vector<int> array)
+    {
+        long long length = array.size();
+        int temp;
+        for (int i = 0 ; i < length - 1; i++)
+        {
+            for (int j = 0 ; j < length - 1; j++)
+            {
+                if (array[j] > array[j + 1])
+                {
+                    temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+                }
+            }
+        }
+        output(array);
+    }
+
+    void simpleSeletSort(vector<int> array)
+    {
+        long long length = array.size();
+        int min;
+        int key;
+        for (int i = 0 ; i < length ; i++)
+        {
+            min = array[i];
+            key = i;
+            for (int j = i ; j < length; j++) {
+                if (min > array[j]) {
+                    min = array[j];
+                    key = j;
+                }
+            }
+            array[key] = array[i];
+            array[i] = min;
+        }
+        output(array);
+    }
+
+    void shellSort(vector<int> array){
+
+    }
+
+    void fastSort(vector<int> &array, const int begin , const int end){
+        int key = array[begin];
+        int location = begin;
+        int _begin = begin;
+        int _end = end;
+        int temp ;
+        while(_begin < _end){
+            if (array[_end] < array[_begin]){
+                temp = array[_end];
+                array[_end] = array[_begin];
+                array[_begin] = temp;
+                if (array[_begin] == key) location = _begin;
+                else location = _end;
+            }
+            if (array[_begin] == key){
+                _end--;
+            }
+            else{
+                _begin++;
+            }
+        }
+        if ((location - begin) > 1) fastSort(array, begin , location - 1);
+        if ((end - location) > 1) fastSort(array, location + 1, end);
+    }
+
+    void PZHFastSort(vector<int> &nums, int l, int r){
+        if (l >= r) return;
+        int k = l, k2 = r;
+        while (l < r) {
+            while (l < r && nums[l] <= nums[k]) l++;
+            while (l < r && nums[r] >= nums[k]) r--;
+            swap(nums[l], nums[r]);
+        }
+        if (nums[k] > nums[l]) swap(nums[l], nums[k]);
+        PZHFastSort(nums, k, l - 1);
+        PZHFastSort(nums, l, k2);
+    }
+
+    void _heapSort(vector<int> &array, const int root, const int length){
+        if (root * 2 + 2 > length) return ;
+        int max = array[root], key = root, temp;
+        if ((root * 2 + 2) <= (length - 1)){
+            if (array[root * 2 + 1] > array[root * 2 + 2]){
+                max = array[root * 2 + 1];
+                key = root * 2 + 1;
+            }
+            else{
+                max = array[root * 2 + 2];
+                key = root * 2 + 2;
+            }
+        }
+        else if ((root * 2 + 1) == (length - 1)) max = array[root * 2 + 1],key = root * 2 + 1;
+        if (array[root] < max){
+            temp = array[key];
+            array[key] = array[root];
+            array[root] = temp;
+        }
+        _heapSort(array, key, length);
+    }
+    void buildHead(vector<int> &array){
+        int length = array.size();
+        for (int i = length / 2 - 1; i >= 0 ; i--){
+            _heapSort(array, i, length);
+        }
+    }
+    void heapSort(vector<int> &array){
+        int temp;
+        for (int i = array.size() - 1 ; i >= 0 ; i--){
+            temp = array[0];
+            array[0] = array[i];
+            array[i] = temp;
+            _heapSort(array, 0 , i);
+        }
+    }
+
+    void _mergerSort(vector<int> &array, vector<int> &_array, const int start, const int middle, const int end){
+        int _start = start;
+        int _middle = middle;
+        int num = 0;
+        while (_start < middle && _middle < end){
+            while (_start < middle && array[_start] <= array[_middle]){
+                _array[num++] = array[_start++];
+            }
+            while (_middle < end && array[_middle] < array[_start]){
+                _array[num++] = array[_middle++];
+            }
+        }
+        if (_start == middle){
+            while(_middle < end){
+                _array[num++] = array[_middle++];
+            }
+        }
+        else{
+            while(_start < middle){
+                _array[num++] = array[_start++];
+            }
+        }
+        for (int i = 0 ; i < end - start ; i++){
+            array[start + i] = _array[i];
+        }
+    }
+
+    void mergerSort(vector<int> &array, vector<int> &_array){
+        int k = 1;
+        const int length = array.size();
+        while (k < length){
+            for (int i = 0 ; i < length ; i = i + k * 2){
+                if (i + k * 2 < length)
+                    _mergerSort(array,_array, i, i + k, i + k * 2);
+                if (i + k < length && i + k * 2 >= length){
+                    _mergerSort(array,_array, i, i + k, length);
+                }
+            }
+            k = k * 2;
+        }
+    }
+
+    void output(vector<int> array)
+    {
+        for (int i = 0 ; i < array.size() ; i++)
+        {
+            cout << array[i] << endl;
+        }
+    }
+};
+
+
+int main() {
+    vector<int> array{6,3,5,1,8,9,2,1,7};
+    vector<int> _array(array.size(),0);
+    Sort sort;
+    sort.mergerSort(array, _array);
+    sort.output(array);
+    nth_element(array.begin(),array.begin() + 5, array.end());
+    for (int i = 0 ; i < 5 ; i++){
+        cout << array[i];
+    }
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
